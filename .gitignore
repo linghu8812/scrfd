@@ -1,0 +1,6 @@
+.idea/
+mmdet.egg-info/
+__pycache__/
+
+*.pth
+*.onnx

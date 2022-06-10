@@ -1,0 +1,2 @@
+python scrfd2onnx.py ../configs/scrfd/scrfd_10g_bnkps.py ../model.pth --input-img test.jpg --shape 640 640
+# python scrfd2onnx.py ../configs/scrfd/scrfd_500m_bnkps.py ../model.pth --input-img test.jpg --shape 640 640
