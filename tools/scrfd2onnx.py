@@ -71,6 +71,7 @@ def pytorch2onnx(config_path,
             3: '?'
         }
 
+    tensor_data = [torch.zeros(input_config['input_shape'])]
     torch.onnx.export(
         model,
         tensor_data,
@@ -118,6 +119,10 @@ def parse_args():
         action='store_true',
         help='verify the onnx model output against pytorch output')
     parser.add_argument(
+        '--batch-size',
+        type=int,
+        help='input batch size of model')
+    parser.add_argument(
         '--shape',
         type=int,
         nargs='+',
@@ -151,9 +156,9 @@ if __name__ == '__main__':
             osp.dirname(__file__), '../tests/data/t1.jpg')
 
     if len(args.shape) == 1:
-        input_shape = (1, 3, args.shape[0], args.shape[0])
+        input_shape = (args.batch_size, 3, args.shape[0], args.shape[0])
     elif len(args.shape) == 2:
-        input_shape = (1, 3) + tuple(args.shape)
+        input_shape = (args.batch_size, 3) + tuple(args.shape)
     else:
         raise ValueError('invalid input shape')
 
@@ -178,9 +183,10 @@ if __name__ == '__main__':
         pos = cfg_name.rfind('.')
         cfg_name = cfg_name[:pos]
         if dynamic:
-            args.output_file = osp.join(output_dir, "%s.onnx"%cfg_name)
+            args.output_file = osp.join(output_dir, "%s_bs%d.onnx" % (cfg_name, input_shape[0]))
         else:
-            args.output_file = osp.join(output_dir, "%s_shape%dx%d.onnx"%(cfg_name,input_shape[2],input_shape[3]))
+            args.output_file = osp.join(output_dir, "%s_shape%dx%d_bs%d.onnx" % (cfg_name, input_shape[2],
+                                                                                 input_shape[3], input_shape[0]))
 
     # convert model to onnx file
     pytorch2onnx(
